@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск поставщиков{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Введите ваш запрос</h2>
+                <form method="POST" action="{{ url_for('search') }}">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Категория</label>
+                        <input type="text" class="form-control" id="category" name="category" 
+                               placeholder="Например: монтаж пожарки" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">География</label>
+                        <input type="text" class="form-control" id="location" name="location" 
+                               placeholder="Например: Москва" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Поиск</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

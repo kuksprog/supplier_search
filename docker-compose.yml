@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  supplier-search:
+    build: .
+    ports:
+      - "5000:5000"
+      - "8000:8000"
+    environment:
+      - YANDEX_SEARCH_API_KEY=${YANDEX_SEARCH_API_KEY:-AQVNzFVoXQpLzucXJ-LUM1h1GaOgo3N1mdwjI-0u}
+      - SPARK_API_KEY=${SPARK_API_KEY:-}
+    volumes:
+      - ./:/app
+    restart: unless-stopped 

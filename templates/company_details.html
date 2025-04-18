@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ company.legal_name or 'Компания' }} - Подробная информация{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">{{ company.legal_name or 'Информация о компании' }}</h1>
+            
+            <!-- Основная информация -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Основная информация</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>ИНН:</strong> {{ company.inn or 'Не указан' }}</p>
+                            <p><strong>ОГРН:</strong> {{ company.ogrn or 'Не указан' }}</p>
+                            <p><strong>Полное название:</strong> {{ company.full_name or 'Не указано' }}</p>
+                            <p><strong>Статус:</strong> {{ company.company_status or 'Не указан' }}</p>
+                            <p><strong>Дата регистрации:</strong> {{ company.registration_date or 'Не указана' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Адрес:</strong> {{ company.address or 'Не указан' }}</p>
+                            <p><strong>Руководитель:</strong> {{ company.ceo_name or 'Не указан' }}</p>
+                            <p><strong>Размер компании:</strong> {{ company.company_size.get('@Description', 'Нет данных') if company.company_size else 'Нет данных' }}</p>
+                            <p><strong>Численность сотрудников:</strong> {{ company.employees_count or 'Не указано' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Финансовые показатели -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Финансовые показатели</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Выручка:</strong> 
+                                {% if company.revenue %}
+                                    {{ "{:,.2f}".format(company.revenue/1000000000) }} млрд руб. ({{ company.finance_year or '2020' }})
+                                {% else %}
+                                    Нет данных
+                                {% endif %}
+                            </p>
+                            <p><strong>Прибыль:</strong> 
+                                {% if company.profit %}
+                                    {{ "{:,.2f}".format(company.profit/1000000000) }} млрд руб. ({{ company.finance_year or '2020' }})
+                                {% else %}
+                                    Нет данных
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Уровень риска:</strong> {{ company.risk_level or 'Нет данных' }}</p>
+                            <p><strong>ИФР:</strong> {{ company.ifr or 'Нет данных' }}</p>
+                            <p><strong>ИДО:</strong> {{ company.ido or 'Нет данных' }}</p>
+                            <p><strong>ИПД:</strong> {{ company.ipd or 'Нет данных' }}</p>
+                            <p><strong>Отсутствуют незавершенные исполнительные производства:</strong> 
+                                {% if company.no_pending_proceedings is not none %}
+                                    {% if company.no_pending_proceedings %}
+                                        Да
+                                    {% else %}
+                                        Нет
+                                    {% endif %}
+                                {% else %}
+                                    Нет данных
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Виды деятельности -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Виды деятельности</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Основной вид деятельности:</h6>
+                    <p>{{ company.main_activity or 'Не указан' }}</p>
+                    
+                    {% if company.additional_activities %}
+                    <h6>Дополнительные виды деятельности:</h6>
+                    <ul>
+                        {% for activity in company.additional_activities %}
+                        <li>{{ activity }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Лицензии -->
+            {% if company.licenses %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Лицензии</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Номер</th>
+                                    <th>Вид деятельности</th>
+                                    <th>Статус</th>
+                                    <th>Дата выдачи</th>
+                                    <th>Срок действия</th>
+                                    <th>Выдавший орган</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for license in company.licenses %}
+                                <tr>
+                                    <td>{{ license.number or 'Не указан' }}</td>
+                                    <td>{{ license.activity or 'Не указан' }}</td>
+                                    <td>{{ license.status or 'Не указан' }}</td>
+                                    <td>{{ license.issue_date or 'Не указана' }}</td>
+                                    <td>{{ license.end_date or 'Не указана' }}</td>
+                                    <td>{{ license.issuing_authority or 'Не указан' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Членство в СРО -->
+            {% if company.sro_membership %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Членство в СРО</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Номер</th>
+                                    <th>Дата</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sro in company.sro_membership %}
+                                <tr>
+                                    <td>{{ sro.name or 'Не указано' }}</td>
+                                    <td>{{ sro.number or 'Не указан' }}</td>
+                                    <td>{{ sro.date or 'Не указана' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Структура компании -->
+            {% if company.structure_info %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Структура компании</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Количество филиалов:</strong> {{ company.structure_info.branches or 'Нет данных' }}</p>
+                            <p><strong>Количество дочерних компаний:</strong> {{ company.structure_info.affiliated_companies_egrul or 'Нет данных' }}</p>
+                            <p><strong>Количество соучредителей:</strong> {{ company.structure_info.coowners_egrul or 'Нет данных' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Количество представительств:</strong> {{ company.structure_info.branches_egrul or 'Нет данных' }}</p>
+                            <p><strong>Количество некоммерческих организаций:</strong> {{ company.structure_info.nonprofit_organizations or 'Нет данных' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+<!-- 
+            <div class="info-section">
+                <h3>Основная деятельность</h3>
+                <div class="info-item">
+                    <span class="label">Основной вид деятельности:</span>
+                    <span class="value">{{ company.main_activity if company.main_activity else "Нет данных" }}</span>
+                </div>
+                {% if company.additional_activities %}
+                <div class="info-item">
+                    <span class="label">Дополнительные виды деятельности:</span>
+                    <ul class="value-list">
+                        {% for activity in company.additional_activities %}
+                        <li>{{ activity }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div> -->
+
+            <div class="info-section">
+                <h3>Информация о СРО</h3>
+                <div class="info-item">
+                    <span class="label">Наименование СРО:</span>
+                    <span class="value">{{ company.sro_name if company.sro_name else "Нет данных" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
